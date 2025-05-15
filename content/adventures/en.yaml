@@ -2631,11 +2631,11 @@ adventures:
                     ```
             14:
                 story_text: |
-                    We are going to learn more new items. You might know them already from mathematics, the `<` and `>`.
-                    The `<` checks if the first number is smaller than the second, for example age `<` 12 checks if age is smaller than 12.
-                    If you want to check if the first number is smaller or equal to the second, you can use `<=`, for example age `<=` 11.
-                    The `>` checks if the first number is bigger than the second, for example points `>` 10 checks if points is larger than 10.
-                    If you want to check if the first number is bigger or equal to the second, you can use `>=`, for example points `>=` 11.
+                    We are going to compare numbers! You might know them already from mathematics, the `<` and `>`.
+                    The `<` checks if the first number is smaller than the second, for example `age < 12` checks if age is smaller than 12.
+                    If you want to check if the first number is smaller or equal to the second, you can use `<=`, for example `age <= 11`.
+                    The `>` checks if the first number is bigger than the second, for example `points > 10` checks if points is larger than 10.
+                    If you want to check if the first number is bigger or equal to the second, you can use `>=`, for example `points >= 11`.
                     You use these comparisons in an `{if}`, like this:
                 example_code: |
                     ```
@@ -2651,7 +2651,7 @@ adventures:
                         {print} 'You are older than me!'
                     ```
                 story_text_2: |
-                    From this level on, if you want to compare exactly, you can use two equal signs. This is what most programming languages do:
+                    You can compare exactly with two equal signs, like `==` (this is what most programming languages do):
                 example_code_2: |
                     ```
                     name = {ask} 'What is your name?'
