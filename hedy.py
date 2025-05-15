@@ -3716,41 +3716,6 @@ def transpile(input_string, level, lang="en", skip_faulty=True, is_debug=False, 
     return transpile_result
 
 
-def translate_characters(s):
-    # this method is used to make it more clear to kids what is meant in error messages
-    # for example ' ' is hard to read, space is easier
-    commas = [',', "،", "，", "、"]
-    if s == ' ':
-        return 'space'
-    elif s in commas:
-        return 'comma'
-    elif s == '?':
-        return 'question mark'
-    elif s == '\n':
-        return 'newline'
-    elif s == '.':
-        return 'period'
-    elif s == '!':
-        return 'exclamation mark'
-    elif s == '*':
-        return 'star'
-    elif s == "'":
-        return 'single quotes'
-    elif s == '"':
-        return 'double quotes'
-    elif s == '/':
-        return 'slash'
-    elif s == '-':
-        return 'dash'
-    else:
-        return s
-
-
-def beautify_parse_error(character_found):
-    character_found = translate_characters(character_found)
-    return character_found
-
-
 def find_indent_length(line):
     number_of_spaces = 0
     for x in line:
@@ -4035,6 +4000,22 @@ def process_input_string(input_string, level, lang, preprocess_ifs_enabled=True)
     return result
 
 
+# used to clarify error messages for kids, e.g. ' ' is hard to read, space is easier
+_char_names = {
+    ' ': 'space',
+    **{c: 'comma' for c in [',', "،", "，", "、"]},
+    '?': 'question mark',
+    '\n': 'newline',
+    '.': 'period',
+    '!': 'exclamation mark',
+    '*': 'star',
+    "'": 'single quotes',
+    '"': 'double quotes',
+    '/': 'slash',
+    '-': 'dash',
+}
+
+
 def parse_input(input_string, level, lang):
     parser = get_parser(level, lang, skip_faulty=source_map.skip_faulty)
     try:
@@ -4050,7 +4031,7 @@ def parse_input(input_string, level, lang):
             # not yet in use, could be used in the future (when our parser rules are
             # better organize, now it says ANON*__12 etc way too often!)
             # characters_expected = str(e.allowed)
-            character_found = beautify_parse_error(e.char)
+            character_found = _char_names.get(e.char, e.char)
             # print(e.args[0])
             # print(location, character_found, characters_expected)
             fixed_code = program_repair.remove_unexpected_char(input_string, location[0], location[1])
