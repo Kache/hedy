@@ -3131,7 +3131,7 @@ class ConvertToPython_12(ConvertToPython_11):
             value = value[1:-1].replace("'", "\\'")
         if (lv.num_sys is None or lv.num_sys == 'Latin') and lv.bool_sys is None:
             return str(value)
-        # In level 12, the f string uses ''', so we keep the status quo and use single quotes for the numeral system
+        # In level 12, the f string uses "'''", so we keep the status quo and use single quotes for the numeral system
         num_sys_part = f", num_sys='{lv.num_sys}'" if lv.num_sys else ''
         bool_sys_part = f', bool_sys={lv.bool_sys}' if lv.bool_sys else ''
         return f"{{localize({value}{num_sys_part}{bool_sys_part})}}"
