@@ -1,3 +1,4 @@
+<!--
 Please replace all _____ before you create a pull request!
 
 Start the name of the PR with one of the relevant prefixes in the title of the PR:
@@ -28,3 +29,4 @@ Done? Check if you have it all in place using this list: (mark with x if done)
 - [ ] Has a "How to test" section
 
 If you're unsure about any of these, don't hesitate to ask. We're here to help!
+-->
