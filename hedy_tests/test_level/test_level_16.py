@@ -575,12 +575,14 @@ class TestsLevel16(HedyTester):
 
     def test_color_with_list_variable_runtime_gives_error(self):
         code = textwrap.dedent("""\
+            forward 50
             c = ['red', 'green', 'blue']
             color c""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "c = Value([Value('red'), Value('green'), Value('blue')])",
-            self.color_transpiled('{c}')
+            self.turtle_color_transpiled('{c}')
         )
 
         self.multi_level_tester(
@@ -591,12 +593,14 @@ class TestsLevel16(HedyTester):
 
     def test_color_with_list_access_random(self):
         code = textwrap.dedent("""\
-        colors = ['red', 'green', 'blue']
-        color colors[random]""")
+            forward 50
+            colors = ['red', 'green', 'blue']
+            color colors[random]""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "colors = Value([Value('red'), Value('green'), Value('blue')])",
-            self.color_transpiled('{random.choice(colors.data)}')
+            self.turtle_color_transpiled('{random.choice(colors.data)}')
         )
 
         self.multi_level_tester(

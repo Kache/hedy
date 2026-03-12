@@ -66,7 +66,7 @@ class TestsLevel3(HedyTester):
             forward 10""")
 
         expected = self.dedent(
-            self.color_transpiled("red", 'en'),
+            self.turtle_color_transpiled("red", 'en'),
             self.forward_transpiled('10'))
 
         self.single_level_tester(
@@ -83,7 +83,7 @@ class TestsLevel3(HedyTester):
 
         expected = self.dedent(
             "lijstkleuren = ['blauw', 'groen', 'wit']",
-            self.color_transpiled("{random.choice(lijstkleuren)}", lang),
+            self.turtle_color_transpiled("{random.choice(lijstkleuren)}", lang),
             self.forward_transpiled('10'))
 
         self.multi_level_tester(
@@ -606,16 +606,18 @@ class TestsLevel3(HedyTester):
         )
 
     #
-    # color tests
+    # turtle color tests
     #
     def test_color_with_list_variable_gives_runtime_error(self):
         code = textwrap.dedent("""\
+            forward 50
             c is red, green, blue
             color c""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "c = ['red', 'green', 'blue']",
-            self.color_transpiled('c'))
+            self.turtle_color_transpiled('c'))
 
         self.single_level_tester(
             code=code,
@@ -625,12 +627,14 @@ class TestsLevel3(HedyTester):
 
     def test_color_with_list_color_variable(self):
         code = textwrap.dedent("""\
+            forward 50
             red is light, dark
             color red""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "red = ['light', 'dark']",
-            self.color_transpiled('red'))
+            self.turtle_color_transpiled('red'))
 
         self.single_level_tester(
             code=code,
@@ -640,12 +644,14 @@ class TestsLevel3(HedyTester):
 
     def test_color_with_list_access(self):
         code = textwrap.dedent("""\
+            forward 50
             colors is red, green, blue
             color colors at 2""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "colors = ['red', 'green', 'blue']",
-            self.color_transpiled('{colors[int(2)-1]}'))
+            self.turtle_color_transpiled('{colors[int(2)-1]}'))
 
         self.multi_level_tester(
             max_level=5,
@@ -656,12 +662,14 @@ class TestsLevel3(HedyTester):
 
     def test_color_with_list_access_random(self):
         code = textwrap.dedent("""\
+            forward 50
             colors is red, green, blue
             color colors at random""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "colors = ['red', 'green', 'blue']",
-            self.color_transpiled('{random.choice(colors)}'))
+            self.turtle_color_transpiled('{random.choice(colors)}'))
 
         self.multi_level_tester(
             max_level=5,

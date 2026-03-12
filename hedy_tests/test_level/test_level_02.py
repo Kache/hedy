@@ -675,12 +675,12 @@ class TestsLevel2(HedyTester):
         )
 
     #
-    # color tests
+    # turtle color tests
     #
     @parameterized.expand(hedy.english_colors)
     def test_all_colors(self, color):
-        code = f'color {color}'
-        expected = self.color_transpiled(color)
+        code = f'forward 50\ncolor {color}'
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled(color))
 
         self.multi_level_tester(
             code=code,
@@ -690,8 +690,8 @@ class TestsLevel2(HedyTester):
         )
 
     def test_color_red_ar(self):
-        code = 'لون احمر'
-        expected = self.color_transpiled('red', lang='ar')
+        code = 'تقدم ٥٠\nلون احمر'
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled('red', lang='ar'))
 
         self.multi_level_tester(
             code=code,
@@ -703,8 +703,8 @@ class TestsLevel2(HedyTester):
 
     def test_one_color_nl(self):
         lang = 'nl'
-        code = "kleur blauw"
-        expected = self.color_transpiled('blue', lang)
+        code = "vooruit 50\nkleur blauw"
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled('blue', lang='nl'))
 
         self.multi_level_tester(
             code=code,
@@ -716,11 +716,13 @@ class TestsLevel2(HedyTester):
 
     def test_color_with_var(self):
         code = textwrap.dedent("""\
+            forward 50
             foo is white
             color foo""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "foo = 'white'",
-            self.color_transpiled('{foo}')
+            self.turtle_color_transpiled('{foo}')
         )
 
         self.multi_level_tester(
@@ -732,11 +734,13 @@ class TestsLevel2(HedyTester):
 
     def test_color_with_keyword_var(self):
         code = textwrap.dedent("""\
+            forward 50
             sum is white
             color sum""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "_sum = 'white'",
-            self.color_transpiled('{_sum}')
+            self.turtle_color_transpiled('{_sum}')
         )
 
         self.multi_level_tester(

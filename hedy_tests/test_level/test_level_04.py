@@ -1042,12 +1042,12 @@ class TestsLevel4(HedyTester):
                                 max_level=11)
 
     #
-    # color
+    # turtle color tests
     #
     @parameterized.expand(hedy.english_colors)
     def test_all_colors(self, color):
-        code = f'color {color}'
-        expected = self.color_transpiled(color)
+        code = f'forward 50\ncolor {color}'
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled(color))
 
         self.multi_level_tester(
             code=code,
@@ -1057,8 +1057,8 @@ class TestsLevel4(HedyTester):
         )
 
     def test_color_red(self):
-        code = "color red"
-        expected = self.color_transpiled('red')
+        code = "forward 50\ncolor red"
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled('red'))
 
         self.multi_level_tester(
             code=code,
@@ -1069,8 +1069,8 @@ class TestsLevel4(HedyTester):
 
     def test_color_translated(self):
         lang = 'nl'
-        code = "kleur blauw"
-        expected = self.color_transpiled('blue', lang='nl')
+        code = "vooruit 50\nkleur blauw"
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled('blue', lang='nl'))
 
         self.multi_level_tester(
             code=code,
@@ -1082,11 +1082,13 @@ class TestsLevel4(HedyTester):
 
     def test_color_basic(self):
         code = textwrap.dedent("""\
-        color red
-        forward 10""")
+            forward 50
+            color red
+            forward 10""")
 
         expected = self.dedent(
-            self.color_transpiled('red', 'en'),
+            self.forward_transpiled(50),
+            self.turtle_color_transpiled('red', 'en'),
             self.forward_transpiled('10'))
 
         self.multi_level_tester(

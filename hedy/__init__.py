@@ -507,7 +507,7 @@ class AstInfo:
     roles_of_variables: dict[str, Role]
 
     @ft.cached_property
-    def has_turtle(self): return self._has_any_cmds(Command.forward, Command.turn, Command.color)
+    def has_turtle(self): return self._has_any_cmds(Command.forward, Command.turn)
     @ft.cached_property
     def has_pressed(self): return self._has_any_cmds('if_pressed', 'if_pressed_else')
     @ft.cached_property

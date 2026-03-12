@@ -155,12 +155,14 @@ class TestsLevel13(HedyTester):
             def move(color):
                 color color
             c = 'blue'
+            forward 50
             move(c)""")
 
         expected = self.dedent(
             "def move(color):",
-            (self.color_transpiled('{color}'), '  '),
+            (self.turtle_color_transpiled('{color}'), '  '),
             "c = Value('blue')",
+            self.forward_transpiled(50),
             "move(c)"
         )
 

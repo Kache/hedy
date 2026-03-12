@@ -610,7 +610,7 @@ class TestsLevel7(HedyTester):
 
         expected = self.dedent(
             "lijstkleuren = Value([Value('blauw'), Value('groen'), Value('wit')])",
-            self.color_transpiled("{random.choice(lijstkleuren.data)}", lang),
+            self.turtle_color_transpiled("{random.choice(lijstkleuren.data)}", lang),
             self.forward_transpiled('10'))
 
         self.multi_level_tester(
@@ -633,15 +633,17 @@ class TestsLevel7(HedyTester):
         )
 
     #
-    # color tests
+    # turtle color tests
     #
     def test_color_with_var(self):
         code = textwrap.dedent("""\
+            forward 50
             foo is white
             color foo""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "foo = Value('white')",
-            self.color_transpiled('{foo}')
+            self.turtle_color_transpiled('{foo}')
         )
 
         self.multi_level_tester(
@@ -653,11 +655,13 @@ class TestsLevel7(HedyTester):
 
     def test_color_with_keyword_var(self):
         code = textwrap.dedent("""\
+            forward 50
             sum is white
             color sum""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "_sum = Value('white')",
-            self.color_transpiled('{_sum}')
+            self.turtle_color_transpiled('{_sum}')
         )
 
         self.multi_level_tester(
@@ -669,12 +673,14 @@ class TestsLevel7(HedyTester):
 
     def test_color_with_list_access(self):
         code = textwrap.dedent("""\
+            forward 50
             colors is red, green, blue
             color colors at 2""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "colors = Value([Value('red'), Value('green'), Value('blue')])",
-            self.color_transpiled('{colors.data[int(2)-1]}'))
+            self.turtle_color_transpiled('{colors.data[int(2)-1]}'))
 
         self.multi_level_tester(
             max_level=11,
@@ -685,12 +691,14 @@ class TestsLevel7(HedyTester):
 
     def test_color_with_list_access_random(self):
         code = textwrap.dedent("""\
+            forward 50
             colors is red, green, blue
             color colors at random""")
 
         expected = self.dedent(
+            self.forward_transpiled(50),
             "colors = Value([Value('red'), Value('green'), Value('blue')])",
-            self.color_transpiled('{random.choice(colors.data)}'))
+            self.turtle_color_transpiled('{random.choice(colors.data)}'))
 
         self.multi_level_tester(
             max_level=11,

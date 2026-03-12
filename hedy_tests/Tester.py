@@ -438,7 +438,7 @@ class HedyTester(unittest.TestCase):
         return f"time.sleep(int_with_error({val}, {HedyTester.value_exception_transpiled()}))"
 
     @staticmethod
-    def color_transpiled(val, lang="en"):
+    def turtle_color_transpiled(val: str, lang="en"):
         color_dict = {hedy_translation.translate_keyword_from_en(x, lang): x for x in hedy.english_colors}
         both_colors = hedy.command_make_color_local(lang)
 

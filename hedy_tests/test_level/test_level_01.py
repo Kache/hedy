@@ -495,11 +495,11 @@ class TestsLevel1(HedyTester):
         )
 
     #
-    # color tests
+    # turtle color tests
     #
     def test_color_no_args(self):
-        code = "color"
-        expected = "t.pencolor('black')"
+        code = "forward 50\ncolor"
+        expected = self.dedent(self.forward_transpiled(50), "t.pencolor('black')")
         self.multi_level_tester(
             code=code,
             expected=expected,
@@ -507,22 +507,22 @@ class TestsLevel1(HedyTester):
             max_level=10)
 
     def test_one_color_red(self):
-        code = "color red"
-        expected = "t.pencolor('red')"
+        code = "forward 50\ncolor red"
+        expected = self.dedent(self.forward_transpiled(50), "t.pencolor('red')")
 
         self.single_level_tester(code=code, expected=expected,
                                  extra_check_function=self.is_turtle())
 
     def test_one_color_purple(self):
-        code = "color purple"
-        expected = "t.pencolor('purple')"
+        code = "forward 50\ncolor purple"
+        expected = self.dedent(self.forward_transpiled(50), "t.pencolor('purple')")
 
         self.single_level_tester(code=code, expected=expected,
                                  extra_check_function=self.is_turtle())
 
     def test_one_color_nl(self):
-        code = "kleur paars"
-        expected = "t.pencolor('purple')"
+        code = "vooruit 50\nkleur paars"
+        expected = self.dedent(self.forward_transpiled(50), "t.pencolor('purple')")
 
         self.single_level_tester(code=code, expected=expected,
                                  extra_check_function=self.is_turtle(), lang='nl')

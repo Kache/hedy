@@ -819,12 +819,12 @@ class TestsLevel12(HedyTester):
         self.multi_level_tester(code=code, exception=exceptions.UnquotedAssignTextException)
 
     #
-    # color tests
+    # turtle color tests
     #
     @parameterized.expand(hedy.english_colors)
     def test_all_colors(self, color):
-        code = f'color "{color}"'
-        expected = self.color_transpiled(f'{color}')
+        code = f'forward 50\ncolor "{color}"'
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled(f'{color}'))
 
         self.multi_level_tester(
             code=code,
@@ -834,8 +834,8 @@ class TestsLevel12(HedyTester):
 
     @parameterized.expand(['zwart', 'blauw', 'bruin', 'grijs', 'groen', 'oranje', 'roze', 'rood', 'wit', 'geel'])
     def test_all_colors_nl(self, color):
-        code = f'kleur "{color}"'
-        expected = self.color_transpiled(f'{color}', lang='nl')
+        code = f'vooruit 50\nkleur "{color}"'
+        expected = self.dedent(self.forward_transpiled(50), self.turtle_color_transpiled(f'{color}', lang='nl'))
 
         self.multi_level_tester(
             code=code,
@@ -846,11 +846,13 @@ class TestsLevel12(HedyTester):
 
     def test_color_with_var(self):
         code = textwrap.dedent("""\
+            forward 50
             foo is 'white'
             color foo""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "foo = Value('white')",
-            self.color_transpiled('{foo}')
+            self.turtle_color_transpiled('{foo}')
         )
 
         self.multi_level_tester(
@@ -861,11 +863,13 @@ class TestsLevel12(HedyTester):
 
     def test_color_with_keyword_var(self):
         code = textwrap.dedent("""\
+            forward 50
             sum is 'white'
             color sum""")
         expected = self.dedent(
+            self.forward_transpiled(50),
             "_sum = Value('white')",
-            self.color_transpiled('{_sum}')
+            self.turtle_color_transpiled('{_sum}')
         )
 
         self.multi_level_tester(
