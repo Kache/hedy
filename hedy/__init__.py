@@ -1970,25 +1970,6 @@ class ConvertToPython_1(ConvertToPython):
             return add_sleep_to_command(transpiled, False, self.is_debug, location="after")
         return transpiled
 
-    def make_turtle_color_command(self, parameter, command, command_text, language):
-        both_colors = command_make_color_local(language)
-        variable = self.get_fresh_var('__trtl')
-
-        # we translate the color value to English at runtime, since it might be decided at runtime
-        # coming from a random list or ask
-
-        color_dict = {hedy_translation.translate_keyword_from_en(x, language): x for x in english_colors}
-        ex = make_value_error(command, 'suggestion_color', self.language, parameter)
-        return textwrap.dedent(f"""\
-            {variable} = f'{parameter}'
-            color_dict = {color_dict}
-            if {variable} not in {both_colors}:
-              raise Exception(f{ex})
-            else:
-              if {variable} not in {english_colors}:
-                {variable} = color_dict[{variable}]
-            t.{command_text}({variable}){self.add_debug_breakpoint()}""")
-
     def make_index_error_check_if_list(self, args):
         # TODO: it is not nice to detect whether there is list access in the arguments using regular expressions.
         #  We parsed the string to a ParseTree, transpiled that to a string, and now we are parsing it again via regex?
@@ -2047,7 +2028,23 @@ class ConvertToPython_2(ConvertToPython_1):
         value = self.unpack(args[0])
         value = self.process_arg_for_fstring(value, meta.line)
 
-        return self.make_turtle_color_command(value, Command.color, 'pencolor', self.language)
+        both_colors = command_make_color_local(self.language)
+        variable = self.get_fresh_var('__trtl')
+
+        # we translate the color value to English at runtime, since it might be decided at runtime
+        # coming from a random list or ask
+
+        color_dict = {hedy_translation.translate_keyword_from_en(x, self.language): x for x in english_colors}
+        ex = make_value_error(Command.color, 'suggestion_color', self.language, value)
+        return textwrap.dedent(f"""\
+            {variable} = f'{value}'
+            color_dict = {color_dict}
+            if {variable} not in {both_colors}:
+              raise Exception(f{ex})
+            else:
+              if {variable} not in {english_colors}:
+                {variable} = color_dict[{variable}]
+            t.pencolor({variable}){self.add_debug_breakpoint()}""")
 
     def turn(self, meta, args):
         if not args:
