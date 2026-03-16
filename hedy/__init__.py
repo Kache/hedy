@@ -29,7 +29,7 @@ from lark import Tree, Transformer, visitors, v_args
 from os import path, getenv
 import sys
 
-from typing import Literal, NamedTuple
+from typing import Literal, NamedTuple, override
 
 log = {
     'ast': logging.getLogger('hedy.ast'),
@@ -311,16 +311,10 @@ command_turn_literals = ['right', 'left']
 english_colors = ['black', 'blue', 'brown', 'gray', 'green', 'orange', 'pink', 'purple', 'red', 'white', 'yellow']
 
 
-def color_commands_local(language):
-    colors_local = [hedy_translation.translate_keyword_from_en(k, language) for k in english_colors]
-    return colors_local
-
-
-def command_make_color_local(language):
-    if language == "en":
-        return english_colors
-    else:
-        return english_colors + color_commands_local(language)
+def lang_colors(*langs: str):
+    """Returns dict translating color names from each lang to english"""
+    langs = tuple({k: 1 for k in langs})  # ordered uniqueness
+    return {hedy_translation.translate_keyword_from_en(c, lg): c for lg in langs for c in english_colors}
 
 
 # Commands and their types per level (only partially filled!)
@@ -1918,11 +1912,8 @@ class ConvertToPython_1(ConvertToPython):
         return self.make_forward(int(self.unpack(args[0])))
 
     def color(self, meta, args):
-        if not args:
-            return f"t.pencolor('black'){self.add_debug_breakpoint()}"  # no arguments defaults to black ink
-
-        arg = self.unpack(args[0])
-        if arg in command_make_color_local(self.language):
+        arg = self.unpack(args[0]) if args else 'black'
+        if arg in english_colors or arg in lang_colors(self.language):
             return f"t.pencolor('{arg}'){self.add_debug_breakpoint()}"
         else:
             # the TypeValidator should protect against reaching this line:
@@ -2021,30 +2012,26 @@ class ConvertToPython_1(ConvertToPython):
 @hedy_transpiler(level=2)
 @source_map_transformer(source_map)
 class ConvertToPython_2(ConvertToPython_1):
+    @override
     def color(self, meta, args):
-        if not args:
-            return f"t.pencolor('black'){self.add_debug_breakpoint()}"
-
-        value = self.unpack(args[0])
-        value = self.process_arg_for_fstring(value, meta.line)
-
-        both_colors = command_make_color_local(self.language)
-        variable = self.get_fresh_var('__trtl')
-
         # we translate the color value to English at runtime, since it might be decided at runtime
         # coming from a random list or ask
+        value = self.unpack(args[0]) if args else None
+        if value:
+            py_expr = self.get_fresh_var('__color')
+            fstr_val = self.process_arg_for_fstring(value, meta.line)
+            color_values = {k: v for k, v in lang_colors('en', self.language).items()}
+            errmsg = make_value_error(Command.color, 'suggestion_color', self.language, value)
+            set_py_name = textwrap.dedent(f"""\
+                {py_expr} = {color_values}.get('{fstr_val}', None)
+                if {py_expr} is None:
+                  raise Exception(f{errmsg})
+            """)
+        else:
+            py_expr = repr('black')
+            set_py_name = ''
 
-        color_dict = {hedy_translation.translate_keyword_from_en(x, self.language): x for x in english_colors}
-        ex = make_value_error(Command.color, 'suggestion_color', self.language, value)
-        return textwrap.dedent(f"""\
-            {variable} = f'{value}'
-            color_dict = {color_dict}
-            if {variable} not in {both_colors}:
-              raise Exception(f{ex})
-            else:
-              if {variable} not in {english_colors}:
-                {variable} = color_dict[{variable}]
-            t.pencolor({variable}){self.add_debug_breakpoint()}""")
+        return set_py_name + f"t.pencolor({py_expr}){self.add_debug_breakpoint()}"
 
     def turn(self, meta, args):
         if not args:

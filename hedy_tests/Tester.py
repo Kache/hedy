@@ -439,18 +439,11 @@ class HedyTester(unittest.TestCase):
 
     @staticmethod
     def turtle_color_transpiled(val: str, lang="en"):
-        color_dict = {hedy_translation.translate_keyword_from_en(x, lang): x for x in hedy.english_colors}
-        both_colors = hedy.command_make_color_local(lang)
-
         return textwrap.dedent(f'''\
-        __trtl = f'{val}'
-        color_dict = {color_dict}
-        if __trtl not in {both_colors}:
-          raise Exception(f{HedyTester.value_exception_transpiled()})
-        else:
-          if __trtl not in {hedy.english_colors}:
-            __trtl = color_dict[__trtl]
-        t.pencolor(__trtl)''')
+            __color = {hedy.lang_colors('en', lang)}.get('{val}', None)
+            if __color is None:
+              raise Exception(f{HedyTester.value_exception_transpiled()})
+            t.pencolor(__color)''')
 
     def input_transpiled(self, var_name, text, bool_sys=None):
         if self.level < 6:
