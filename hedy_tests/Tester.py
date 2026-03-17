@@ -445,6 +445,20 @@ class HedyTester(unittest.TestCase):
               raise Exception(f{HedyTester.value_exception_transpiled()})
             t.pencolor(__color)''')
 
+    @staticmethod
+    def print_color_transpiled(color: str, lang="en"):
+        color_values = {k: hedy.ansi.colors[v] for k, v in hedy.lang_colors('en', lang).items()}
+        variable_color_code = hedy.ansi.color(0).replace('0', '{__color}')
+        return textwrap.dedent(f'''\
+            __color = {color_values}.get('{color}', None)
+            if __color is None:
+              raise Exception(f{HedyTester.value_exception_transpiled()})
+            print(f{variable_color_code!r}, end='')''')
+
+    @staticmethod
+    def print_color_reset():
+        return f"print({hedy.ansi.sgr()!r}, end='')"
+
     def input_transpiled(self, var_name, text, bool_sys=None):
         if self.level < 6:
             return f"{var_name} = input(f'{text}')"

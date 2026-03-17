@@ -20,6 +20,7 @@ from . import exceptions
 from . import translation as hedy_translation
 from . import grammar as hedy_grammar
 from . import error as hedy_error
+from . import ansi
 import textwrap
 
 import lark
@@ -510,6 +511,8 @@ class AstInfo:
     def has_music(self): return self._has_any_cmds(Command.play)
     @ft.cached_property
     def has_sleep(self): return self._has_any_cmds(Command.sleep)
+    @ft.cached_property
+    def has_print_color(self): return not self.has_turtle and self._has_any_cmds(Command.color)
 
     def _has_any_cmds(self, *cmds: str):
         return any(c in self.commands for c in cmds)
@@ -2013,14 +2016,29 @@ class ConvertToPython_1(ConvertToPython):
 @source_map_transformer(source_map)
 class ConvertToPython_2(ConvertToPython_1):
     @override
+    def program(self, meta, args: list[str]):
+        if self.info.has_print_color:
+            args.append(f"print({ansi.sgr()!r}, end='')")
+        return super().program(meta, args)
+
+    @override
     def color(self, meta, args):
+        def set_color(py_expr: str):
+            if self.info.has_turtle:
+                return f"t.pencolor({py_expr}){self.add_debug_breakpoint()}"
+            else:
+                return f"print(f'\\x1b[38;5;{{{py_expr}}}m', end='')"
+
+        def color_val(color_name: str):
+            return color_name if self.info.has_turtle else ansi.colors[color_name]
+
         # we translate the color value to English at runtime, since it might be decided at runtime
         # coming from a random list or ask
         value = self.unpack(args[0]) if args else None
         if value:
             py_expr = self.get_fresh_var('__color')
             fstr_val = self.process_arg_for_fstring(value, meta.line)
-            color_values = {k: v for k, v in lang_colors('en', self.language).items()}
+            color_values = {k: color_val(v) for k, v in lang_colors('en', self.language).items()}
             errmsg = make_value_error(Command.color, 'suggestion_color', self.language, value)
             set_py_name = textwrap.dedent(f"""\
                 {py_expr} = {color_values}.get('{fstr_val}', None)
@@ -2031,7 +2049,7 @@ class ConvertToPython_2(ConvertToPython_1):
             py_expr = repr('black')
             set_py_name = ''
 
-        return set_py_name + f"t.pencolor({py_expr}){self.add_debug_breakpoint()}"
+        return set_py_name + set_color(py_expr)
 
     def turn(self, meta, args):
         if not args:

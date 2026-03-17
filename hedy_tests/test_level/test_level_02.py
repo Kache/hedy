@@ -675,6 +675,25 @@ class TestsLevel2(HedyTester):
         )
 
     #
+    # print color tests
+    #
+    @parameterized.expand(hedy.english_colors)
+    def test_print_text_colors(self, color):
+        code = f'color {color}\nprint Hello'
+        expected = self.dedent(
+            self.print_color_transpiled(color),
+            "print(f'Hello')",
+            self.print_color_reset(),
+        )
+
+        self.multi_level_tester(
+            code=code,
+            expected=expected,
+            output=hedy.ansi.color(hedy.ansi.colors[color]) + 'Hello\n' + hedy.ansi.sgr(),
+            max_level=3
+        )
+
+    #
     # turtle color tests
     #
     @parameterized.expand(hedy.english_colors)
